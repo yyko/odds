@@ -1,24 +1,38 @@
+const endpoint = 'https://script.google.com/macros/s/AKfycbxcnZJ9I1x97BA5rRndv3LzE-i7wGSKmt3KDizMz3CnouLGyDg/exec';
 const axios = require('axios');
 const gen = require('./gen');
 
-const data = (endpoint)=>{
-   return new Promise((resolve, reject)=>{
-    axios.get(endpoint)
+const races = ()=>{
+  const url = endpoint + '?q=races';
+  return new Promise((resolve, reject)=>{
+    axios.get(url)
       .then(res=>{
-      const tables_map = res.data.tables_map;
-      const update_map = res.data.update_map;
-      let html = '';
-      for(var table_name in tables_map){
-        let xs = tables_map[table_name];
-        let d = update_map[table_name];
-        html += table_name + gen.odds_block(xs, d);
-        };
-      resolve(html); 
-      })
-      .catch(err=>reject(err));
-   
+      resolve(res.data.data);
+    })
+    .catch(err=>reject(err));
+
   })
 }
 
+const race_data = (name) => {
+  const url = endpoint + '?q=race&name=' + encodeURIComponent(name);
+  return new Promise((resolve, reject)=>{
+    axios.get(url)
+      .then(res=>{
+        const status = res.data.status;
+        if (status == 'ok') {
+          const table = res.data.data.table;
+          const date = res.data.data.date;
+          const html = gen.odds_block(table, date);
+          resolve(html);
+        } else {
+          reject(res.data.data);
+        }
+       })
+      .catch(err=>reject(err));
 
-exports.data = data;
+  })
+
+}
+exports.races = races;
+exports.race_data = race_data;

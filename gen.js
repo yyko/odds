@@ -32,7 +32,7 @@ const table = (xs)=>{
 const odds_block = (xs, iso8601d) =>{
   const tbl = table(xs);
   const p = wrapInTag('p', {}, '*Current odds Updated ' + moment(iso8601d).format(' MMMM Do, YYYY'));
- 
+
   return wrapInTag('div', {class:'promo-table'}, [tbl, p].join(''));
 
 }
